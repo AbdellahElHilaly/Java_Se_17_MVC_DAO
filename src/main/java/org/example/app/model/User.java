@@ -5,12 +5,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public  class User implements BaseModel<User> {
-    public int id ;
-    public String name ;
-    public int age ;
-    public double salary ;
-    public boolean isMarried ;
+public class User extends BaseModel<User> {
+    public int id;
+    public String name;
+    public int age;
+    public double salary;
+    public boolean isMarried;
 
 
     @Override
@@ -25,14 +25,14 @@ public  class User implements BaseModel<User> {
 
     @Override
     public List<User> setDataList(ResultSet resultSet) throws SQLException {
-        List<User> userList = new ArrayList<>();
 
         while (resultSet.next()) {
             User user = new User();
             user.setData(resultSet);
-            userList.add(user);
+            this.dataList.add(user);
         }
-        return userList;
+
+        return this.dataList;
     }
 
 }

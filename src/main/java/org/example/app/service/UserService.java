@@ -9,7 +9,7 @@ import java.util.List;
 public class UserService {
     User user = new User();
 
-    UserRepository userRepository = new UserRepository(user);
+    UserRepository userRepository = new UserRepository();
 
     public User find(int id) throws SQLException {
         return user.setData(userRepository.find(id));

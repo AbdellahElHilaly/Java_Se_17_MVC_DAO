@@ -5,8 +5,7 @@ import org.example.dao.repository.root.BaseRepository;
 
 public class UserRepository extends BaseRepository<User> {
 
-
-    public UserRepository(User model) {
+    public UserRepository() {
         super(User.class);
     }
 }

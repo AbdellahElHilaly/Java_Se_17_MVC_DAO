@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class Post implements BaseModel<Post>{
+public class Post extends BaseModel<Post>{
 
     public int id;
     public String title;
