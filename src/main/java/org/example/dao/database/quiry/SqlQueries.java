@@ -1,4 +1,4 @@
-package org.example.dao.sql;
+package org.example.dao.database.quiry;
 
 public class SqlQueries {
     public static String createEmptyTable(String tableName) {
@@ -44,4 +44,53 @@ public class SqlQueries {
     public static String deleteById(String tableName, int id) {
         return "DELETE FROM " + tableName + " WHERE id = " + id;
     }
+
+    public static String insertInto(String tableName, String[][] fields, String[] values) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("INSERT INTO ").append(tableName).append(" (");
+        for (String[] field : fields) {
+            stringBuilder.append(field[1]).append(",");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        stringBuilder.append(") VALUES (");
+        for (String value : values) {
+            if (value.equals("true")) {
+                value = "1";
+            } else if (value.equals("false")) {
+                value = "0";
+            }
+            stringBuilder.append("'").append(value).append("'").append(",");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        stringBuilder.append(")");
+        return stringBuilder.toString();
+    }
+
+    public static String update(String tableName, String[][] fields, String[] values, int id) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("UPDATE ").append(tableName).append(" SET ");
+
+        for (int i = 0; i < fields.length; i++) {
+            String field = fields[i][1];
+            if (field.equals("id"))  continue;
+            String value = values[i];
+
+            if (value.equals("true")) {
+                value = "1";
+            } else if (value.equals("false")) {
+                value = "0";
+            }
+
+            stringBuilder.append(field).append(" = '").append(value).append("'");
+
+            if (i < fields.length - 1) {
+                stringBuilder.append(", ");
+            }
+        }
+
+        stringBuilder.append(" WHERE id = ").append(id);
+
+        return stringBuilder.toString();
+    }
+
 }

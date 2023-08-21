@@ -1,4 +1,4 @@
-package org.example.dao.db.mysql;
+package org.example.dao.database.mysql;
 
 import org.example.app.Helper.PrintHelper;
 
@@ -12,7 +12,6 @@ public class MySqlConnection {
     private static final String DATABASE = "jdbc_posts_java";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "";
-
     private static Connection connection;
 
     private MySqlConnection() {
@@ -30,7 +29,6 @@ public class MySqlConnection {
         connection = DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE, USERNAME, PASSWORD);
         PrintHelper.printSuccessMessage("Connected to database " + DATABASE + " successfully");
     }
-
 
     public static void closeConnection() throws SQLException {
         if (connection != null && !connection.isClosed()) {

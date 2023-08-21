@@ -12,15 +12,23 @@ public class UserService {
     UserRepository userRepository = new UserRepository();
 
     public User find(int id) throws SQLException {
-        return user.setData(userRepository.find(id));
+        return user.mapData(userRepository.find(id));
     }
 
     public List<User> findAll() throws SQLException {
-        return user.setDataList(userRepository.findAll());
+        return user.mapDataList(userRepository.findAll());
     }
 
     public void delete(int id) throws SQLException {
         userRepository.delete(id);
+    }
+
+    public  User save(User user)throws SQLException{
+        return  this.user.mapData(userRepository.save(user));
+    }
+
+    public  User update(User user, int id) throws SQLException {
+        return  this.user.mapData(userRepository.update(user, id));
     }
 
 

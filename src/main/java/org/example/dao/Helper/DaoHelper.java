@@ -1,23 +1,23 @@
 package org.example.dao.Helper;
 
 import org.example.app.Helper.PrintHelper;
-import org.example.dao.repository.root.BaseRepository;
-import org.example.dao.repository.root.CrudOperations;
-import org.example.dao.sql.SqlQueries;
+import org.example.dao.database.quiry.SqlQueries;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DaoHelper {
     private static String className;
 
-    public static String[][] getFields(Class<?> modelClass) {
+    public static String[][] getClassFields(Class<?> modelClass) {
         Field[] fields = modelClass.getDeclaredFields();
         List<String[]> filteredFields = new ArrayList<>();
 
         for (Field field : fields) {
-            if (!field.isSynthetic()) { // Exclude synthetic fields
+            if (!field.isSynthetic()) {
                 String fieldType = field.getType().getSimpleName();
                 String fieldName = field.getName();
                 filteredFields.add(new String[]{fieldType, fieldName});
@@ -61,4 +61,58 @@ public class DaoHelper {
         }
     }
 
+    public static <T> String[] getClassValues(T model) {
+        Field[] fields = model.getClass().getDeclaredFields();
+        List<String> values = new ArrayList<>();
+
+        for (Field field : fields) {
+            if (!field.isSynthetic()) {
+                field.setAccessible(true);
+                try {
+                    values.add(String.valueOf(field.get(model)));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return values.toArray(new String[0]);
+    }
+
+    public static <T> void setFieldByName(T instance, String fieldName, Object value) throws IllegalAccessException {
+        try {
+            Field field = instance.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            value = handleNullableValue(instance, field, value);
+            field.set(instance, value);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> Object handleNullableValue(T instance, Field field, Object value) {
+        if (value == null) {
+            Class<?> fieldType = field.getType();
+            if (fieldType.equals(boolean.class)) {
+                value = false;
+            } else if (fieldType.equals(double.class)) {
+                value = 0.0;
+            } else if (fieldType.equals(Date.class)) {
+                value = new Date();
+            } else if (fieldType.equals(int.class)) {
+                value = 0;
+            } else if (fieldType.equals(String.class)) {
+                value = "";
+            } else {
+                try {
+                    value = fieldType.getDeclaredConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                         InvocationTargetException e) {
+                    throw new RuntimeException("Error handling nullable value: " + e.getMessage());
+                }
+            }
+            fieldType = null;
+        }
+        return value;
+    }
 }
