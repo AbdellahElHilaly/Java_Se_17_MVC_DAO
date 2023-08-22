@@ -2,7 +2,7 @@ package org.example.dao.Helper;
 
 import org.example.dao.Type.Paragraph;
 import org.example.dao.Type.Text;
-import org.example.dao.database.quiry.SqlQueries;
+import org.example.dao.database.quiry.PostgresqlQueries;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -44,23 +44,23 @@ public class DaoHelper {
     public static String getAddColumnQuery(String tableName, String dataType, String ColumnName) {
         switch (dataType) {
             case "String":
-                return SqlQueries.addStringColumnIfNotExists(tableName, ColumnName);
+                return Factory.getSqlQueries().addStringColumnIfNotExists(tableName, ColumnName);
             case "int":
-                return SqlQueries.addIntColumnIfNotExists(tableName, ColumnName);
+                return Factory.getSqlQueries().addIntColumnIfNotExists(tableName, ColumnName);
             case "double":
-                return SqlQueries.addDoubleColumnIfNotExists(tableName, ColumnName);
+                return Factory.getSqlQueries().addDoubleColumnIfNotExists(tableName, ColumnName);
             case "boolean":
-                return SqlQueries.addBooleanColumnIfNotExists(tableName, ColumnName);
+                return Factory.getSqlQueries().addBooleanColumnIfNotExists(tableName, ColumnName);
             case "Date":
-                return SqlQueries.addDateColumnIfNotExists(tableName, ColumnName);
+                return Factory.getSqlQueries().addDateColumnIfNotExists(tableName, ColumnName);
             case "Time":
-                return SqlQueries.addTimeColumnIfNotExists(tableName, ColumnName);
+                return Factory.getSqlQueries().addTimeColumnIfNotExists(tableName, ColumnName);
             case "DateTime":
-                return SqlQueries.addDateTimeColumnIfNotExists(tableName, ColumnName);
+                return Factory.getSqlQueries().addDateTimeColumnIfNotExists(tableName, ColumnName);
             case "Text":
-                return SqlQueries.addTextColumnIfNotExists(tableName, ColumnName);
+                return Factory.getSqlQueries().addTextColumnIfNotExists(tableName, ColumnName);
             case "Paragraph":
-                return SqlQueries.addParagraphColumnIfNotExists(tableName, ColumnName);
+                return Factory.getSqlQueries().addParagraphColumnIfNotExists(tableName, ColumnName);
             default:
                 PrintHelper.printErrorMessage("Unknown data type");
                 return null;

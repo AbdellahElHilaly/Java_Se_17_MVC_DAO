@@ -1,114 +1,86 @@
 package org.example.dao.database.quiry;
 
-import org.example.dao.database.connection.Config;
+import org.example.dao.Helper.SqlHelper;
 
-public class SqlQueries {
-    public static String createEmptyTable(String tableName) {
-        if(Config.DATABASE_TYPE.equals("mysql")) return createEmptyTableMysql(tableName);
-        else return createEmptyTablePostgresql(tableName);
-    }
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-    private static String createEmptyTablePostgresql(String tableName) {
-        return "CREATE TABLE IF NOT EXISTS " + tableName + " (id SERIAL PRIMARY KEY)";
-    }
+public abstract class SqlQueries {
 
-    private static String createEmptyTableMysql(String tableName) {
-        return "CREATE TABLE IF NOT EXISTS " + tableName + " (id INT PRIMARY KEY AUTO_INCREMENT)";
-    }
+    abstract public String createEmptyTable(String tableName);
 
-    public static String addIntColumnIfNotExists(String tableName, String columnName) {
+    public String addIntColumnIfNotExists(String tableName, String columnName) {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " INT";
     }
 
-    public static String addDoubleColumnIfNotExists(String tableName, String columnName) {
+    public String addDoubleColumnIfNotExists(String tableName, String columnName) {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " DOUBLE";
     }
 
-    public static String addStringColumnIfNotExists(String tableName, String columnName) {
+    public String addStringColumnIfNotExists(String tableName, String columnName) {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " VARCHAR(255)";
     }
 
-    public static String addBooleanColumnIfNotExists(String tableName, String columnName) {
+    public String addBooleanColumnIfNotExists(String tableName, String columnName) {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " BOOLEAN";
     }
 
-    public static String addDateColumnIfNotExists(String tableName, String columnName) {
+    public String addDateColumnIfNotExists(String tableName, String columnName) {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " DATE";
     }
 
-    public static String addTimeColumnIfNotExists(String tableName, String columnName) {
+    public String addTimeColumnIfNotExists(String tableName, String columnName) {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " TIME";
     }
 
-    public static String addDateTimeColumnIfNotExists(String tableName, String columnName) {
+    public String addDateTimeColumnIfNotExists(String tableName, String columnName) {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " DATETIME";
     }
 
-    public static String addTextColumnIfNotExists(String tableName, String columnName) {
+    public String addTextColumnIfNotExists(String tableName, String columnName) {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " TEXT";
     }
 
-    public static String addParagraphColumnIfNotExists(String tableName, String columnName) {
+    public String addParagraphColumnIfNotExists(String tableName, String columnName) {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " LONGTEXT";
     }
 
-    public static String selectAll(String tableName) {
-        return "SELECT * FROM " + tableName;
+    public String selectAll(String tableName) {
+        return "SELECT * FROM " + tableName + " ORDER BY id ASC";
     }
 
-    public static String selectById(String tableName, int id) {
+    public String selectById(String tableName, int id) {
         return "SELECT * FROM " + tableName + " WHERE id = " + id;
     }
 
-    public static String deleteById(String tableName, int id) {
+    public String deleteById(String tableName, int id) {
         return "DELETE FROM " + tableName + " WHERE id = " + id;
     }
 
-    public static String insertInto(String tableName, String[][] fields, String[] values) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("INSERT INTO ").append(tableName).append(" (");
-        for (String[] field : fields) {
-            stringBuilder.append(field[1]).append(",");
-        }
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-        stringBuilder.append(") VALUES (");
-        for (String value : values) {
-            value = handelBoolenData(value);
-            stringBuilder.append("'").append(value).append("'").append(",");
-        }
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-        stringBuilder.append(")");
-        return stringBuilder.toString();
+    public String insertInto(String tableName, String[][] fields, String[] values) {
+        String columns = Arrays.stream(fields)
+                .skip(1) // Skip the first element (the id field)
+                .map(field -> field[1])
+                .collect(Collectors.joining(", "));
+
+        String valueList = Arrays.stream(values)
+                .skip(1) // Skip the first element (the id value)
+                .map(value -> "'" + SqlHelper.handelBoolenData(value) + "'")
+                .collect(Collectors.joining(", "));
+
+        return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, columns, valueList);
     }
 
 
-    public static String update(String tableName, String[][] fields, String[] values, int id) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("UPDATE ").append(tableName).append(" SET ");
+    public String update(String tableName, String[][] fields, String[] values, int id) {
+        String updateFields = Arrays.stream(fields)
+                .filter(field -> !field[1].equals("id")) // Skip the id field
+                .map(field -> {
+                    String value = SqlHelper.handelBoolenData(values[Arrays.asList(fields).indexOf(field)]);
+                    return field[1] + " = '" + value + "'";
+                })
+                .collect(Collectors.joining(", "));
 
-        for (int i = 0; i < fields.length; i++) {
-            String field = fields[i][1];
-            if (field.equals("id"))  continue;
-            String value = values[i];
-
-            value = handelBoolenData(value);
-
-            stringBuilder.append(field).append(" = '").append(value).append("'");
-
-            if (i < fields.length - 1) {
-                stringBuilder.append(", ");
-            }
-        }
-
-        stringBuilder.append(" WHERE id = ").append(id);
-
-        return stringBuilder.toString();
+        return String.format("UPDATE %s SET %s WHERE id = %d", tableName, updateFields, id);
     }
-
-    private static String handelBoolenData(String value) {
-        if (value.equals("true")) return "1";
-        if (value.equals("false")) return "0";
-        return value;
-    }
-
 }

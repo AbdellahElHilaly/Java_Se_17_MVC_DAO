@@ -1,8 +1,9 @@
 package org.example.dao.ORM;
 
+import org.example.dao.Helper.Factory;
 import org.example.dao.Helper.PrintHelper;
 import org.example.dao.Helper.DaoHelper;
-import org.example.dao.database.quiry.SqlQueries;
+import org.example.dao.database.quiry.PostgresqlQueries;
 
 import java.sql.SQLException;
 
@@ -22,7 +23,7 @@ public  class BaseRepository<T> extends CrudOperations<T> {
     public void createTable() throws SQLException {
         PrintHelper.printInfoMessage("Creating table " + tableName + "...................................");
 
-        this.statement.execute(SqlQueries.createEmptyTable(tableName));
+        this.statement.execute(Factory.getSqlQueries().createEmptyTable(tableName));
 
         PrintHelper.printSuccessMessage("Table " + tableName + " created successfully");
     }

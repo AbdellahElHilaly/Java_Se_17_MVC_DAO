@@ -1,5 +1,6 @@
 package org.example.dao.ORM;
 
+import org.example.app.model.Category;
 import org.example.dao.Helper.DaoHelper;
 
 import java.sql.*;
@@ -27,6 +28,7 @@ public abstract class ModelMapper<T> {
                 throw new RuntimeException(e);
             }
         }
+        rsmd = null;
 
         return instance;
     }
