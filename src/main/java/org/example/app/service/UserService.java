@@ -1,7 +1,7 @@
 package org.example.app.service;
 
 import org.example.app.model.User;
-import org.example.dao.repository.UserRepository;
+import org.example.app.repository.UserRepository;
 
 import java.sql.SQLException;
 import java.util.List;

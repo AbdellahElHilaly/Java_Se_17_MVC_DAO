@@ -3,14 +3,47 @@ package org.example.app.model;
 
 import org.example.dao.ORM.ModelMapper;
 
-
 public class User extends ModelMapper<User> {
 
-    public int id;
-    public String name;
-    public int age;
-    public double salary;
-    public boolean isMarried;
+    private int id;
+    private String name;
+    private int age;
+    private double salary;
+    private boolean isMarried;
+
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public int getAge() {
+        return age;
+    }
+    public void setAge(int age) {
+        this.age = age;
+    }
+    public double getSalary() {
+        return salary;
+    }
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+    public boolean isMarried() {
+        return isMarried;
+    }
+    public void setMarried(boolean married) {
+        isMarried = married;
+    }
+
+
 
 
 
@@ -31,27 +64,6 @@ public class User extends ModelMapper<User> {
         return new User();
     }
 
-
-//    @Override
-//    public User setData(ResultSet resultSet) throws SQLException {
-//        this.id = resultSet.getInt("id");
-//        this.name = resultSet.getString("name");
-//        this.age = resultSet.getInt("age");
-//        this.salary = resultSet.getDouble("salary");
-//        this.isMarried = resultSet.getBoolean("isMarried");
-//        return this;
-//    }
-//
-//    @Override
-//    public List<User> setDataList(ResultSet resultSet) throws SQLException {
-//
-//        while (resultSet.next()) {
-//            User user = new User();
-//            user.setData(resultSet);
-//            this.dataList.add(user);
-//        }
-//        return this.dataList;
-//    }
 
 }
 

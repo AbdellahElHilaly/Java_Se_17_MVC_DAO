@@ -1,7 +1,18 @@
 package org.example.dao.database.quiry;
 
+import org.example.dao.database.connection.Config;
+
 public class SqlQueries {
     public static String createEmptyTable(String tableName) {
+        if(Config.DATABASE_TYPE.equals("mysql")) return createEmptyTableMysql(tableName);
+        else return createEmptyTablePostgresql(tableName);
+    }
+
+    private static String createEmptyTablePostgresql(String tableName) {
+        return "CREATE TABLE IF NOT EXISTS " + tableName + " (id SERIAL PRIMARY KEY)";
+    }
+
+    private static String createEmptyTableMysql(String tableName) {
         return "CREATE TABLE IF NOT EXISTS " + tableName + " (id INT PRIMARY KEY AUTO_INCREMENT)";
     }
 
@@ -33,6 +44,14 @@ public class SqlQueries {
         return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " DATETIME";
     }
 
+    public static String addTextColumnIfNotExists(String tableName, String columnName) {
+        return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " TEXT";
+    }
+
+    public static String addParagraphColumnIfNotExists(String tableName, String columnName) {
+        return "ALTER TABLE " + tableName + " ADD COLUMN IF NOT EXISTS " + columnName + " LONGTEXT";
+    }
+
     public static String selectAll(String tableName) {
         return "SELECT * FROM " + tableName;
     }
@@ -54,17 +73,14 @@ public class SqlQueries {
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         stringBuilder.append(") VALUES (");
         for (String value : values) {
-            if (value.equals("true")) {
-                value = "1";
-            } else if (value.equals("false")) {
-                value = "0";
-            }
+            value = handelBoolenData(value);
             stringBuilder.append("'").append(value).append("'").append(",");
         }
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         stringBuilder.append(")");
         return stringBuilder.toString();
     }
+
 
     public static String update(String tableName, String[][] fields, String[] values, int id) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -75,11 +91,7 @@ public class SqlQueries {
             if (field.equals("id"))  continue;
             String value = values[i];
 
-            if (value.equals("true")) {
-                value = "1";
-            } else if (value.equals("false")) {
-                value = "0";
-            }
+            value = handelBoolenData(value);
 
             stringBuilder.append(field).append(" = '").append(value).append("'");
 
@@ -91,6 +103,12 @@ public class SqlQueries {
         stringBuilder.append(" WHERE id = ").append(id);
 
         return stringBuilder.toString();
+    }
+
+    private static String handelBoolenData(String value) {
+        if (value.equals("true")) return "1";
+        if (value.equals("false")) return "0";
+        return value;
     }
 
 }

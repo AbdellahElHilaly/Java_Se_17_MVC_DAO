@@ -1,6 +1,7 @@
 package org.example.dao.Helper;
 
-import org.example.app.Helper.PrintHelper;
+import org.example.dao.Type.Paragraph;
+import org.example.dao.Type.Text;
 import org.example.dao.database.quiry.SqlQueries;
 
 import java.lang.reflect.Field;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public class DaoHelper {
     private static String className;
+
 
     public static String[][] getClassFields(Class<?> modelClass) {
         Field[] fields = modelClass.getDeclaredFields();
@@ -27,7 +29,7 @@ public class DaoHelper {
         return filteredFields.toArray(new String[0][0]);
     }
 
-    public static  String getTableName(Class<?> modelClass) {
+    public static String getTableName(Class<?> modelClass) {
 
         String[] words = modelClass.getSimpleName().split("(?=\\p{Upper})");
         StringBuilder stringBuilder = new StringBuilder();
@@ -55,6 +57,10 @@ public class DaoHelper {
                 return SqlQueries.addTimeColumnIfNotExists(tableName, ColumnName);
             case "DateTime":
                 return SqlQueries.addDateTimeColumnIfNotExists(tableName, ColumnName);
+            case "Text":
+                return SqlQueries.addTextColumnIfNotExists(tableName, ColumnName);
+            case "Paragraph":
+                return SqlQueries.addParagraphColumnIfNotExists(tableName, ColumnName);
             default:
                 PrintHelper.printErrorMessage("Unknown data type");
                 return null;
@@ -84,13 +90,36 @@ public class DaoHelper {
             Field field = instance.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
             value = handleNullableValue(instance, field, value);
-            field.set(instance, value);
+
+            if (isSpecialFieldType(field.getType())) {
+                handleSpecialField(instance, field, value);
+            } else {
+                field.set(instance, value);
+            }
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static <T> Object handleNullableValue(T instance, Field field, Object value) {
+    private static boolean isSpecialFieldType(Class<?> fieldType) {
+        return fieldType.equals(Text.class) || fieldType.equals(Paragraph.class);
+    }
+
+    private static <T> void handleSpecialField(T instance, Field field, Object value) throws IllegalAccessException {
+        if (value instanceof String) {
+            Object specialValue = Factory.createSpecialFieldValue(field.getType(), (String) value);
+            field.set(instance, specialValue);
+            specialValue = null;
+        } else {
+            throw new IllegalArgumentException("Invalid value type for special field: " + field.getName());
+        }
+    }
+
+
+
+
+
+    private static <T> Object handleNullableValue(T instance, Field field, Object value) {
         if (value == null) {
             Class<?> fieldType = field.getType();
             if (fieldType.equals(boolean.class)) {
@@ -103,6 +132,10 @@ public class DaoHelper {
                 value = 0;
             } else if (fieldType.equals(String.class)) {
                 value = "";
+            } else if (fieldType.equals(Paragraph.class)) {
+                value = "";
+            } else if (fieldType.equals(Text.class)) {
+                value = "";
             } else {
                 try {
                     value = fieldType.getDeclaredConstructor().newInstance();
@@ -111,8 +144,13 @@ public class DaoHelper {
                     throw new RuntimeException("Error handling nullable value: " + e.getMessage());
                 }
             }
+            System.out.println(value);
             fieldType = null;
         }
         return value;
     }
+
+
+
 }
+

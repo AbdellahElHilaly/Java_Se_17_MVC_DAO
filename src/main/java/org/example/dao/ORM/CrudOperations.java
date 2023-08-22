@@ -1,17 +1,18 @@
-package org.example.dao.repository.root;
+package org.example.dao.ORM;
 
 import org.example.dao.Helper.DaoHelper;
-import org.example.dao.database.mysql.MySqlConnection;
+import org.example.dao.database.connection.Connection;
 import org.example.dao.database.quiry.SqlQueries;
 
-import java.sql.*;
-
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class CrudOperations<T> {
 
     protected final Class<T> modelClass;
     protected final String tableName;
-    protected Connection connection;
+    protected java.sql.Connection connection;
     protected Statement statement;
     ResultSet resultSet;
 
@@ -19,7 +20,7 @@ public class CrudOperations<T> {
         this.modelClass = modelClass;
         this.tableName = DaoHelper.getTableName(modelClass);
         try {
-            this.connection = MySqlConnection.getConnection();
+            this.connection = Connection.getConnection();
             this.statement = connection.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,4 +95,3 @@ public class CrudOperations<T> {
         return resultSet;
     }
 }
-

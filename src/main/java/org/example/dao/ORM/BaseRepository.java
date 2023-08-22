@@ -1,12 +1,12 @@
-package org.example.dao.repository.root;
+package org.example.dao.ORM;
 
-import org.example.app.Helper.PrintHelper;
+import org.example.dao.Helper.PrintHelper;
 import org.example.dao.Helper.DaoHelper;
 import org.example.dao.database.quiry.SqlQueries;
 
 import java.sql.SQLException;
 
-public   class BaseRepository<T> extends CrudOperations<T> {
+public  class BaseRepository<T> extends CrudOperations<T> {
 
     public BaseRepository(Class<T> modelClass) {
         super(modelClass);
